@@ -1,8 +1,13 @@
 Step 1:
+-- Run the first CREATE DATABASE on the server designated as Site 1
 CREATE DATABASE site1; 
+-- Run the second CREATE DATABASE on the server designated as Site 2
 CREATE DATABASE site2; 
 
 Step 2:
+
+-- Run the `CREATE TABLE employee` and its `INSERT` statements on Site 1.
+
 CREATE TABLE employee (
     emp_id INT PRIMARY KEY,
     emp_name VARCHAR(50),
@@ -17,6 +22,9 @@ INSERT INTO employee VALUES
     (3, 'Sneha', 101, 55000); 
 
 
+-- Run the `CREATE TABLE department` and its `INSERT` statements on Site 2.
+
+
 CREATE TABLE department (
     dept_id INT PRIMARY KEY,
     dept_name VARCHAR(50),
@@ -27,8 +35,11 @@ INSERT INTO department VALUES
     (101, 'IT', 'Mumbai'),
     (102, 'HR', 'Pune'); 
 
+
+-- Run Steps 3-7 on Site 1 (the site that will query the remote Site 2 data).
 Step 3:
 CREATE EXTENSION postgres_fdw; 
+
 
 Step 4:
 CREATE SERVER site2_server
@@ -49,6 +60,7 @@ CREATE FOREIGN TABLE department_fdw (
 SERVER site2_server
 OPTIONS (table_name 'department'); 
 
+-- The SELECT query should be executed on Site 1 after the FDW is configured.
 Step 7:
 SELECT e.emp_name, e.salary, d.dept_name, d.location
 FROM employee e
