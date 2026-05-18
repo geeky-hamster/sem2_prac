@@ -1,0 +1,56 @@
+PART A: Log Based Recovery Simulation:
+
+-- Step 1: Check WAL configuration
+SHOW wal_level;
+
+-- Step 2: Create a sample table
+CREATE TABLE recovery_test (
+   id INT PRIMARY KEY,
+   name VARCHAR(50)
+);
+
+-- Step 3: Begin Transaction and Commit
+BEGIN;
+INSERT INTO recovery_test VALUES (1, 'Amit');
+COMMIT;
+
+-- Step 4: Verify Data
+SELECT * FROM recovery_test;
+
+-- Step 5: Start transaction but DO NOT Commit (Failure Case)
+BEGIN;
+INSERT INTO recovery_test VALUES (2, 'Neha');
+-- Do not write COMMIT.
+
+-- Step 6: Simulate Crash and Check Recovery
+-- Simulate failure by closing pgAdmin abruptly or restarting the PostgreSQL service.
+-- After restart, run:
+SELECT * FROM recovery_test;
+
+PART B: Shadow Paging Technique Simulation:
+
+-- Step 1: Create Main Table
+CREATE TABLE shadow_accounts (
+    acc_no INT PRIMARY KEY,
+    name VARCHAR(50),
+    balance INT
+); 
+INSERT INTO shadow_accounts VALUES (201, 'Rahul', 5000); 
+
+-- Step 2: Create Shadow Copy
+CREATE TABLE shadow_copy AS SELECT * FROM shadow_accounts; 
+
+-- Step 3: Perform Update on Current Table
+UPDATE shadow_accounts
+SET balance = balance - 1000
+WHERE acc_no = 201; 
+
+-- Case 1: Commit (Accept Changes)
+DROP TABLE shadow_copy; 
+CREATE TABLE shadow_copy AS
+SELECT * FROM shadow_accounts; 
+
+-- Case 2: Failure Occurs (Discard Changes)
+-- Instead of commit:
+DROP TABLE shadow_accounts; 
+ALTER TABLE shadow_copy RENAME TO shadow_accounts;

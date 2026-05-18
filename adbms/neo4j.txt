@@ -1,0 +1,46 @@
+1. Create Nodes
+a. Create Employees
+CREATE (e1:Employee {name: "Ramesh", age: 28, role: "Developer"})
+CREATE (e2:Employee {name: "Suresh", age: 32, role: "Data Analyst"})
+CREATE (e3:Employee {name: "Mahesh", age: 25, role: "Tester"})
+b. Create Projects
+CREATE (p1:Project {title: "Database Migration", budget: 50000})
+CREATE (p2:Project {title: "API Development", budget: 30000})
+c. Create Managers
+CREATE (m1:Manager {name: "Priya", department: "IT"})
+CREATE (m2:Manager {name: "Rahul", department: "Engineering"})
+
+2. Create Relationships
+a. Assign Employees to Projects
+MATCH (e:Employee {name: "Ramesh"}), (p:Project {title: "Database Migration"})
+CREATE (e)-[:WORKS_ON]->(p)
+MATCH (e:Employee {name: "Suresh"}), (p:Project {title: "API Development"})
+CREATE (e)-[:WORKS_ON]->(p)
+MATCH (e:Employee {name: "Mahesh"}), (p:Project {title: "Database Migration"})
+CREATE (e)-[:WORKS_ON]->(p)
+b. Assign Managers to Projects
+MATCH (m:Manager {name: "Priya"}), (p:Project {title: "Database Migration"})
+CREATE (m)-[:MANAGES]->(p)
+MATCH (m:Manager {name: "Rahul"}), (p:Project {title: "API Development"})
+CREATE (m)-[:MANAGES]->(p)
+
+3. Perform Queries
+a. Find everyone working on the "Database Migration" project
+MATCH (e:Employee)-[:WORKS_ON]->(p:Project {title: "Database Migration"})
+RETURN e.name, e.role
+b. Find out which project Suresh is working on
+MATCH (e:Employee {name: "Suresh"})-[:WORKS_ON]->(p:Project)
+RETURN p.title
+c. Find the manager for Mahesh's project
+MATCH (e:Employee {name: "Mahesh"})-[:WORKS_ON]->(p:Project)<-[:MANAGES]-
+(m:Manager)
+RETURN m.name AS Manager_Name, p.title AS Project
+
+// 4. Update and Delete Data
+a. Update Ramesh's role
+MATCH (e:Employee {name: "Ramesh"})
+SET e.role = "Senior Developer"
+Before Update After Update
+b. Delete Mahesh's record completely
+MATCH (e:Employee {name: "Mahesh"})
+DETACH DELETE e

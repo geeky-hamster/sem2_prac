@@ -1,0 +1,151 @@
+Create User Defined Data Type:
+Address Type (Composite Type):
+CREATE TYPE address_type AS (
+	street TEXT,
+	city TEXT,
+	state TEXT,
+	pincode VARCHAR(6)
+);
+
+Create Base Class (Superclass): 
+Person Table:
+CREATE TABLE Person (
+	name TEXT,
+	dob TEXT,
+	gender CHAR(1),
+	address address_type,
+	phone VARCHAR(15)
+);
+
+Create Subclasses using Inheritance: 
+Doctor Table:
+CREATE TABLE Doctor (
+    doctor_id SERIAL PRIMARY KEY,
+    license_number VARCHAR(50) UNIQUE NOT NULL,
+) INHERITS (Person);
+
+Patient Table:
+create table Patient (
+	patient_id SERIAL PRIMARY KEY
+) INHERITS (Person);
+
+Appointment Table:
+CREATE TABLE appointment (
+    appointment_id SERIAL PRIMARY KEY,
+    patient_id INTEGER NOT NULL,
+    doctor_id INTEGER NOT NULL,
+    appointment_date DATE NOT NULL,
+    appointment_time TIME NOT NULL,
+    reason TEXT,
+    status VARCHAR(20) DEFAULT 'scheduled',
+    FOREIGN KEY (patient_id) REFERENCES patient(patient_id),
+    FOREIGN KEY (doctor_id) REFERENCES doctor(doctor_id)
+);
+
+Insert Doctor Object:
+INSERT INTO Doctor (name, dob, gender, address, phone, license_number)
+VALUES (
+    'Dr. Arjun Mehta',
+    '1985-03-14',
+    'M',
+    ROW('22 Lake View Road', 'Mumbai', 'MH', '400001'),
+    '9876543210',
+    'LIC-445566'
+)
+RETURNING doctor_id;
+
+Insert Patient Object:
+INSERT INTO Patient (name, dob, gender, address, phone)
+VALUES (
+    'Rahul Sharma',
+    '1995-04-12',
+    'M',
+    ROW('Green Park Society', 'Delhi', 'DL', '110016'),
+    '9876501234'
+)
+RETURNING patient_id;
+
+Insert Appointment Object:
+INSERT INTO Appointment (patient_id, doctor_id, appointment_date, appointment_time, reason, status)
+VALUES (
+    1,
+    1,
+    '2026-02-15',
+    '10:30:00',
+    'General check-up',
+    'scheduled'
+)
+RETURNING appointment_id;
+
+INSERT INTO Appointment (patient_id, doctor_id, appointment_date, appointment_time, reason, status)
+VALUES (
+    2,
+    3,
+    '2026-02-16',
+    '14:00:00',
+    'Fever and cold symptoms',
+    'completed'
+)
+RETURNING appointment_id;
+
+
+Retrieve all hospital Persons:
+Code:
+SELECT name, gender, phone
+FROM Person; 
+Output:
+  
+
+Encapsulation Using Function (Method):
+Code:
+Create Function:
+CREATE FUNCTION total_appointments(doc_id INTEGER)
+RETURNS INTEGER AS $$
+BEGIN
+    RETURN (
+        SELECT COUNT(*)
+        FROM Appointment
+        WHERE doctor_id = doc_id
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+Use Function:
+SELECT name, total_appointments(doctor_id)
+FROM Doctor;
+Output:
+ 
+
+Access Object Attributes (UDT):
+Code:
+SELECT name, (address).city
+FROM Person;
+Output:
+ 
+Views for Specialized Behavior:
+Code:
+CREATE VIEW Doctor_Details AS
+SELECT 
+    doctor_id,
+    name,
+    phone,
+    license_number
+FROM Doctor;
+Use View:
+SELECT * FROM Doctor_Details;
+Output:
+ 
+
+Drop Table:
+DROP TABLE IF EXISTS Appointment CASCADE;
+DROP TABLE IF EXISTS Doctor CASCADE;
+DROP TABLE IF EXISTS Patient CASCADE;
+DROP TABLE IF EXISTS Person CASCADE;
+DROP TYPE IF EXISTS address_type CASCADE;
+CASCADE automatically removes dependent objects.
+
+Explain Querry:
+Code:
+EXPLAIN SELECT * FROM Doctor;
+Output:
+ 

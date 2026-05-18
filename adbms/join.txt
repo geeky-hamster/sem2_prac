@@ -1,0 +1,60 @@
+Create Tables:
+CREATE TABLE department (
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(50)
+);
+
+CREATE TABLE student (
+    student_id INT PRIMARY KEY,
+    student_name VARCHAR(50),
+    dept_id INT,
+    FOREIGN KEY (dept_id) REFERENCES department(dept_id)
+);
+
+INSERT INTO department VALUES
+(1, 'Computer'),
+(2, 'Mechanical'),
+(3, 'Electrical');
+
+INSERT INTO student VALUES
+(101, 'Alex', 1),
+(102, 'Nayla', 2),
+(103, 'Dylan', 1),
+(104, 'Lily', 3),
+(105, 'Tucker', 2);
+
+Nested Loop Join:
+
+SET enable_hashjoin = OFF;
+SET enable_mergejoin = OFF;
+SET enable_nestloop = ON;
+
+EXPLAIN ANALYZE
+SELECT s.student_id, s.student_name, d.dept_name
+FROM student s
+JOIN department d
+ON s.dept_id = d.dept_id;
+
+Merge Join:
+
+SET enable_hashjoin = OFF;
+SET enable_mergejoin = ON;
+SET enable_nestloop = OFF;
+
+EXPLAIN ANALYZE
+SELECT s.student_id, s.student_name, d.dept_name
+FROM student s
+JOIN department d
+ON s.dept_id = d.dept_id
+
+Hash Join:
+
+SET enable_nestloop = OFF;
+SET enable_mergejoin = OFF;
+SET enable_hashjoin = ON;
+
+EXPLAIN ANALYZE
+SELECT s.student_id, s.student_name, d.dept_name
+FROM student s
+JOIN department d
+ON s.dept_id = d.dept_id;
