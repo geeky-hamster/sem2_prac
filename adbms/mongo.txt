@@ -1,23 +1,30 @@
 Step 1: Start MongoDB Shell
 mongosh
+
 Step 2: Create or Use Database
 use studentDB
+
 Step 3: Insert a Record (CREATE)
 db.students.insertOne({ name: "Rahul", age: 21, course: "BCA", city: "Mumbai" })
+
 Step 4: Insert Multiple Records
 db.students.insertMany([ {name:"riya", age:22, course:"BSc", city:"Pune"},
 {name:"Amit", age:23, course:"BCom", city:"Nagpur"} ])
+
 Step 5: Display All Records (READ)
 db.students.find()
-Name: Soham Khobrekar
-MCA - A - 36
+
 Step 6: Display Specific Record
 db.students.find({name:"riya"})
+
 Step 7: Update a Record (UPDATE)
 db.students.updateOne( {name:"Rahul"}, {$set:{city:"Delhi"}} )
+
 Step 8: Verify Updated Record
 db.students.find({name:"Rahul"})
+
 Step 9: Delete a Record (DELETE)
 db.students.deleteOne({name:"Amit"})
+
 Step 10: Display Remaining Records
 db.students.find()
